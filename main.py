@@ -1,33 +1,43 @@
-#from PySide2.QtWidgets import QApplication, QWidget
-#from PySide2.QtCore import Qt
-import sys
+import sys, json
+from model.Models import *
 
-from model.Models import Area,Command
+DEFAULT_PATH = ""
+state = {}
 
 
-
-# app = QApplication(sys.argv)
-
-"""
-class DefaultView(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.show()
-
-    def renderAreas(self, event):
-        pass
-"""
-
-def AddArea(name, data):
+def ListAreas(args):
     """Creates """
     pass
 
 
-def RemoveArea(name):
+def AddArea(args):
+    """Creates """
+
     pass
 
 
-def ChangeArea(name, values):
+def RemoveArea(args):
+    if not len(args) == 1:
+        raise ArgumentError("Error: Name not specified")
+    name = args[0]
+    for area in state:
+        if name == area.name:
+            decision = input("Do you really want to delete the {name} area? Y/n 1/0")
+            if decision in ["1", "Y", "y", "yes"]:
+                del area
+                return True
+    raise ArgumentError("Error: Name of area not found.")
+
+
+def ChangeArea(args):
+    pass
+
+
+def DisplayArea(args):
+    pass
+
+
+def AddDay():
     pass
 
 
@@ -38,38 +48,65 @@ def AddDayToArea(args):
     pass
 
 
-def SaveState(areas):
+def SaveState(args=DEFAULT_PATH):
     """Puts the state of diary to JSON"""
-    outdict = {}
-    for a in areas:
+    global state
+    if not len(args) == 1:
+        raise ArgumentError("Too many parameters")
+    with open(args, "w+") as j:
+        json.dump(state, j)
 
-        pass
 
-
-def RecoverState(path):
+def RecoverState(args=DEFAULT_PATH):
     """Recovers the state of diary from JSON"""
-    return None
+    global state
+    if not len(args) == 1:
+        raise ArgumentError("Too many parameters")
+    path = args
+    try:
+        with open(path, "r") as j:
+            state = json.load(j)
+    except FileNotFoundError:
+        print("Error: Invalid path to JSON.")
+    return
     pass
 
 
-#s = DefaultView()
-#app.exec_()
-comms = {"listarea":Command("listarea","lists available areas")}
-def mainLoop(path,commands):
+comms = {
+    "listas": Command("listarea", "lists available areas", ListAreas),
+    "adda": Command("addarea", "adds area and runs the change area subprogram", AddArea, ["name", "type"]),
+    "rema": Command("removearea", "removes specified area", RemoveArea, ["name"]),
+    "changea": Command("changearea", "runs the change area subprogram", ["name"]),
+    "dispa": Command("displayarea", "displays specified area", DisplayArea, ["name"]),
+    "addall": Command("adddaytoall", "runs the add day subprogram for all areas", AddDay),
+    "addspec": Command("adddaytospecific", "runs the add day subprogram for specified area", AddDay, ["name"]),
+    "commit": Command("commit", "commits data to json", SaveState, ["path"]),
+    "recover": Command("recover", "recovers data from json", RecoverState, ["path"])
+
+}
+
+
+def mainLoop(path, commands):
+    global state
     print("for the list of commands type 'help'")
-    state = RecoverState(path)
+    RecoverState(path)
     while True:
-        command, *args= input().split()
+        command, *args = input().split()
         if command == "help":
             for c in commands:
-                print(f"{c.name} {str(*c.args)} {c.description}")
+                print(f"{c} args:{str(*c.args)} {c.description}")
         elif command == "exit":
             print("Bye")
             sys.exit()
         else:
             if command in commands:
-                commands[command].function(args,state)
+                try:
+                    commands[command].function(args)
+                except ArgumentError as e:
+                    print(e.strerror)
+
             else:
                 print("no such command")
 
-mainLoop("",comms)
+
+mainLoop(DEFAULT_PATH, comms)

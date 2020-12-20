@@ -1,26 +1,36 @@
-
 # Area > Day > Item
 class Area():
-    def __init__(self,name,days,type):
+    CHECKLIST = 1
+    SEMATIC_DATA = 2
+    FREE_TEXT = 3
+
+    def __init__(self, name, days, type):
         self.name = name
         self.days = days
-        self.type = type #checklist,sematicData,freetext
+        self.type = type  # checklist,semanticData,freetext
 
 
 class Day():
-    def __init__(self,items,date):
+    def __init__(self, items, date, time):
         self.date = date
         self.items = items
 
 
 class Item():
-    def __init__(self,data,meta):
+    def __init__(self, data, meta):
         self.data = data
-        self.meta = meta
+        self.meta = meta  # isDisplayed, question
+
 
 class Command:
-    def __init__(self,name,description,function,args=[]):
+    def __init__(self, name, description, function, args=[]):
         self.name = name
-        self.args = args
-        self.description= description
+        self.description = description
         self.function = function
+        self.args = args
+
+
+class ArgumentError(ValueError):
+    def __init__(self, arg):
+        self.strerror = arg
+        self.args = {arg}
