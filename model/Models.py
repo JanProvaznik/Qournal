@@ -20,20 +20,20 @@ class Area:
 @dataclass
 class Item:
     name: str
-    data: str
-    meta: dict  # enabled, question
+    data: str  # for CHECKLIST bool
+    meta: dict
 
 
 @dataclass
 class ItemTemplate:
     name: str
-    meta: dict
+    meta: dict  # enabled, question
 
 
 @dataclass
 class Day:
     date: datetime
-    items: dict  # freetext: items[]
+    items: dict  # for FREETEXT: items has one element
 
 
 class Command:
