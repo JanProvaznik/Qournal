@@ -5,7 +5,7 @@ import datetime
 # Area > Day > Item
 class AreaTypes:
     CHECKLIST = 1
-    SEMANTIC_DATA = 2
+    STRUCTURED_DATA = 2
     FREE_TEXT = 3
 
 
@@ -43,8 +43,20 @@ class Command:
         self.function = function
         self.args = args
 
-
+# types: nf(not found), no(number of args),date
 class ArgumentError(ValueError):
-    def __init__(self, arg):
-        self.strerror = arg
-        self.args = {arg}
+    def __init__(self, etype,lower=None,upper=None):
+        e = ""
+        if etype=="nf":
+            e = f"Error: Such {lower} not found"
+        elif etype=="no":
+            if upper is not None:
+                e = f"Error: expected number of arguments between {lower} and {upper}."
+            else:
+                e = f"Error: expected number of arguments: {lower}"
+        elif etype=="date":
+            e = "Error: Wrong date format. Expected YYYY-MM-DD"
+        else:
+            e=etype
+        self.strerror = e
+        self.args = {e}

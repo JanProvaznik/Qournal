@@ -1,0 +1,91 @@
+help
+recover f.json
+
+adda moring 3
+thoughts
+What are your morning thoughts?
+rema moring
+1
+
+adda morning 3
+thoughts
+What are your morning thoughts?
+
+adda lunch 2
+
+addi
+Salt
+How was the lunch salty (1-10)?
+
+addi
+Taste
+How was the lunch tasty (1-10)?
+
+addi
+Time
+How long it took (min)?
+
+chai Salt
+Sweet
+How was the lunch sweet(1-10)?
+Y
+
+exit
+
+adda evening 1
+
+addi
+Running
+Did you run today?
+
+addi
+Anki
+Did you use Anki today?
+
+addi
+Vitamins
+Did you take vitamins today?
+exit
+
+commit f.json
+
+addall
+Hello world!
+7
+3000000
+4
+1
+0
+1
+
+listas
+dispa evening
+dispa lunch
+dispa morning
+
+addall 2021-01-13
+Exam tomorrow :O
+8
+9
+2
+y
+n
+y
+
+addall y
+Bad sleep :(
+1
+1
+1
+x
+x
+v
+
+addspec evening 2020-12-24
+x
+x
+x
+
+dispa evening
+dispa lunch
+dispa morning
