@@ -1,9 +1,9 @@
 import jsonpickle
 import json
 import sys
-from model.Models import *
+from Models import *
 
-DEFAULT_PATH = 'r.json'
+DEFAULT_PATH = 'q.json'
 state = {}
 
 
@@ -84,7 +84,7 @@ def ChangeArea(args):
             area.item_templates[new_name] = old_template
 
             # rename all items inside days in this area
-            for day in area.days:
+            for day in area.days.values():
                 if old_name in day.items:
                     day.items[new_name] = day.items.pop(old_name)
 
@@ -144,14 +144,15 @@ def DisplayArea(args):
     area_name = args[0]
     if area_name not in state:
         raise ArgumentError("nf", "area")
+
     area = state[area_name]
     print(area.name)
 
+    length_of_date_and_spacing = 12
     # table with colsize same as name of item
     if area.type == AreaTypes.CHECKLIST:
-        # used for correct spacing
         displayed_item_names = []
-        print(" " * 10 + "  ", end="")
+        print(" " * length_of_date_and_spacing, end="")
         # table head
         for item_template in area.item_templates.values():
             if item_template.meta['enabled']:
@@ -171,15 +172,14 @@ def DisplayArea(args):
 
                 else:
                     # this item is not present in this day, just put spaces there
-                    print(" " * (len(name) + 1))
+                    print(" " * (len(name) + 1), end='')
             print()
         print()
 
     # table with colsize equal to max of answers or names
     elif area.type == AreaTypes.STRUCTURED_DATA:
-        # todo pretty print
         displayed_item_names_with_lengths = {}
-        print(" " * 12, end="")
+        print(" " * length_of_date_and_spacing, end="")
         # table head initialization
         for item_template in area.item_templates.values():
             if item_template.meta['enabled']:
@@ -204,7 +204,7 @@ def DisplayArea(args):
                     print(printed_value, end='')
                     print(" " * (length - len(printed_value) + 1), end='')
                 else:
-                    print(" " * length, end='')
+                    print(" " * (length + 1), end='')
             print()
         print()
 
@@ -220,7 +220,7 @@ def DisplayArea(args):
 
 
 def ParseAddDay(args=None):
-    """Helper function for determining the correct day."""
+    """Helper function for determining the correct day from input."""
     if args is None:
         args = []
     if len(args) > 1:
@@ -242,6 +242,21 @@ def ParseAddDay(args=None):
     else:
         raise ArgumentError("date")
     return which_day
+
+
+def AddDayToArea(args):
+    """Adds day to specified area.
+    first arg, which day, second which area
+    """
+    global state
+    area = state[args[1]]
+    day = Day(args[0], {})
+    for template in area.item_templates.values():
+        if template.meta['enabled']:
+            answer = input(template.meta['question'])
+            item = Item(template.name, answer)
+            day.items[template.name] = item
+    area.days[args[0]] = day
 
 
 def AddDayToOneArea(args):
@@ -269,21 +284,6 @@ def AddDayToAllAreas(args):
     for area in state.values():
         AddDayToArea([which_day, area.name])
     return True
-
-
-def AddDayToArea(args):
-    """Adds day to specified area.
-    first arg, which day, second which area
-    """
-    global state
-    area = state[args[1]]
-    day = Day(args[0], {})
-    for template in area.item_templates.values():
-        if template.meta['enabled']:
-            answer = input(template.meta['question'])
-            item = Item(template.name, answer, {})
-            day.items[template.name] = item
-    area.days[args[0]] = day
 
 
 def SaveState(args):
@@ -338,6 +338,7 @@ def Exit(args):
 
 
 def MainLoop(commands):
+    """Loop that parses and runs commands."""
     global state
     print("for the list of commands type 'help'")
     while True:
@@ -349,7 +350,6 @@ def MainLoop(commands):
         if command == "help":
             for c in commands.items():
                 print(f"{c[0]} | args:  <{'> <'.join(c[1].args)}> |  {c[1].description}")
-
         else:
             if command in commands:
                 try:
@@ -362,7 +362,7 @@ def MainLoop(commands):
                 print("no such command")
 
 
-# basic commands definitions
+# commands definitions
 comms = {
     "listas": Command("listarea", "lists available areas", ListAreas),
     "adda": Command("addarea", "adds area and runs the change area subprogram types: 1-checklist, 2-structured data, "

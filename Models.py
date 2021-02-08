@@ -18,22 +18,22 @@ class Area:
 
 
 @dataclass
+class Day:
+    date: datetime
+    items: dict  # for FREETEXT: items has one element
+
+
+@dataclass
 class Item:
     name: str
     data: str  # for CHECKLIST bool
-    meta: dict
+    #meta: dict
 
 
 @dataclass
 class ItemTemplate:
     name: str
     meta: dict  # enabled, question
-
-
-@dataclass
-class Day:
-    date: datetime
-    items: dict  # for FREETEXT: items has one element
 
 
 class Command:
@@ -43,20 +43,21 @@ class Command:
         self.function = function
         self.args = args
 
-# types: nf(not found), no(number of args),date
+
 class ArgumentError(ValueError):
-    def __init__(self, etype,lower=None,upper=None):
+    # types: nf(not found), no(number of args),date
+    def __init__(self, etype, lower=None, upper=None):
         e = ""
-        if etype=="nf":
+        if etype == "nf":
             e = f"Error: Such {lower} not found"
-        elif etype=="no":
+        elif etype == "no":
             if upper is not None:
                 e = f"Error: expected number of arguments between {lower} and {upper}."
             else:
                 e = f"Error: expected number of arguments: {lower}"
-        elif etype=="date":
+        elif etype == "date":
             e = "Error: Wrong date format. Expected YYYY-MM-DD"
         else:
-            e=etype
+            e = etype
         self.strerror = e
         self.args = {e}

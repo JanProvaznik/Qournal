@@ -1,5 +1,5 @@
 help
-recover f.json
+recover y.json
 
 adda moring 3
 thoughts
@@ -89,3 +89,56 @@ x
 dispa evening
 dispa lunch
 dispa morning
+
+changea evening
+
+chai Vitamins
+
+
+N
+
+addi
+Shower
+Did you shower today?
+exit
+
+addspec evening 2020-11-09
+n
+1
+0
+
+changea evening
+chai Vitamins
+
+
+Y
+exit
+
+dispa evening
+
+
+changea lunch
+
+chai Taste
+
+
+N
+
+addi
+Name
+What was the name of the dish?
+exit
+
+addspec lunch 2021-01-09
+300
+6
+ovocné knedlíky
+
+changea lunch
+chai Taste
+
+
+Y
+exit
+
+dispa lunch
