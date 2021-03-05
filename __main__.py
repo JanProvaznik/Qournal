@@ -253,7 +253,9 @@ def AddDayToArea(args):
     day = Day(args[0], {})
     for template in area.item_templates.values():
         if template.meta['enabled']:
-            answer = input(template.meta['question'])
+            answer = input(template.meta['question'] + " ")
+            if args[0] in area.days and answer == "": # keep old entry if new is empty
+                answer = area.days[args[0]].items[template.name].data
             item = Item(template.name, answer)
             day.items[template.name] = item
     area.days[args[0]] = day
